@@ -1,0 +1,1262 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AI FAQ Assistant</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f6f8;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: white;
+      width: 90%;
+      max-width: 850px;
+      padding: 35px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    h2 {
+      margin: 25px 0 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .green {
+      background: #16a34a;
+    }
+
+    .green:hover {
+      background: #15803d;
+    }
+
+    .orange {
+      background: #ea580c;
+    }
+
+    .orange:hover {
+      background: #c2410c;
+    }
+
+    .red {
+      background: #dc2626;
+    }
+
+    .red:hover {
+      background: #b91c1c;
+    }
+
+    .logout {
+      margin-top: 25px;
+    }
+
+    .switch {
+      text-align: center;
+      margin-top: 15px;
+      color: #555;
+    }
+
+    .switch span {
+      color: #2563eb;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .result {
+      margin-top: 12px;
+      margin-bottom: 15px;
+    }
+
+    .faq-card {
+      background: #f8fafc;
+      padding: 18px;
+      margin-top: 12px;
+      border-radius: 10px;
+      line-height: 1.7;
+      border: 1px solid #e2e8f0;
+    }
+
+    .faq-card button {
+      width: auto;
+      padding: 8px 14px;
+      margin-top: 12px;
+      margin-right: 5px;
+      margin-bottom: 0;
+      font-size: 14px;
+    }
+
+    .ai-box {
+      background: #eff6ff;
+      padding: 18px;
+      border-radius: 10px;
+      border: 1px solid #bfdbfe;
+      line-height: 1.7;
+      margin-top: 12px;
+    }
+
+    #registerSection,
+    #faqSection {
+      display: none;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>🤖 AI FAQ Assistant</h1>
+
+  <p class="subtitle">
+    Generate, manage and search FAQs using AI
+  </p>
+
+
+  <!-- LOGIN -->
+
+  <div id="loginSection">
+
+    <h2>🔐 Login</h2>
+
+    <input
+      type="email"
+      id="email"
+      placeholder="Enter your email"
+    >
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Enter your password"
+    >
+
+    <button onclick="login()">
+      Login
+    </button>
+
+    <div id="loginResult" class="result"></div>
+
+    <p class="switch">
+      Don't have an account?
+      <span onclick="showRegister()">Create Account</span>
+    </p>
+
+  </div>
+
+
+  <!-- REGISTER -->
+
+  <div id="registerSection">
+
+    <h2>📝 Create Account</h2>
+
+    <input
+      type="text"
+      id="registerName"
+      placeholder="Enter your name"
+    >
+
+    <input
+      type="email"
+      id="registerEmail"
+      placeholder="Enter your email"
+    >
+
+    <input
+      type="password"
+      id="registerPassword"
+      placeholder="Create a password"
+    >
+
+    <button class="green" onclick="register()">
+      Create Account
+    </button>
+
+    <div id="registerResult" class="result"></div>
+
+    <p class="switch">
+      Already have an account?
+      <span onclick="showLogin()">Login</span>
+    </p>
+
+  </div>
+
+
+  <!-- DASHBOARD -->
+
+  <div id="faqSection">
+
+
+    <!-- AI GENERATION -->
+
+    <h2>🤖 Generate FAQ with AI</h2>
+
+    <input
+      type="text"
+      id="topic"
+      placeholder="Enter topic (Example: Cyber Security)"
+    >
+
+    <button onclick="generateFAQ()">
+      ✨ Generate FAQ
+    </button>
+
+    <div id="faqResult" class="result"></div>
+
+
+    <!-- SAVE GENERATED FAQ -->
+
+    <div id="saveAISection" style="display:none;">
+
+      <button
+        class="green"
+        onclick="saveGeneratedFAQ()"
+      >
+        💾 Save Generated FAQ
+      </button>
+
+      <div id="saveAIResult" class="result"></div>
+
+    </div>
+
+
+    <!-- CREATE FAQ -->
+
+    <h2>➕ Create FAQ Manually</h2>
+
+    <input
+      type="text"
+      id="question"
+      placeholder="Enter question"
+    >
+
+    <input
+      type="text"
+      id="answer"
+      placeholder="Enter answer"
+    >
+
+    <input
+      type="text"
+      id="category"
+      placeholder="Enter category"
+    >
+
+    <button
+      class="green"
+      onclick="createFAQ()"
+    >
+      Save FAQ
+    </button>
+
+    <div id="createResult" class="result"></div>
+
+
+    <!-- ALL FAQs -->
+
+    <h2>📚 All FAQs</h2>
+
+    <button onclick="getFAQs()">
+      View All FAQs
+    </button>
+
+    <div id="allFAQs"></div>
+
+
+    <!-- SEARCH -->
+
+    <h2>🔎 Search FAQs</h2>
+
+    <input
+      type="text"
+      id="searchQuery"
+      placeholder="Search FAQs..."
+    >
+
+    <button onclick="searchFAQs()">
+      Search
+    </button>
+
+    <div id="searchResult"></div>
+
+
+    <!-- LOGOUT -->
+
+    <button
+      class="red logout"
+      onclick="logout()"
+    >
+      Logout
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  const API = "http://localhost:5000";
+
+  let generatedQuestion = "";
+  let generatedAnswer = "";
+  let generatedCategory = "";
+
+
+  // =========================
+  // SHOW REGISTER
+  // =========================
+
+  function showRegister() {
+
+    document.getElementById("loginSection").style.display = "none";
+
+    document.getElementById("registerSection").style.display = "block";
+
+    document.getElementById("loginResult").innerText = "";
+  }
+
+
+  // =========================
+  // SHOW LOGIN
+  // =========================
+
+  function showLogin() {
+
+    document.getElementById("registerSection").style.display = "none";
+
+    document.getElementById("loginSection").style.display = "block";
+
+    document.getElementById("registerResult").innerText = "";
+  }
+
+
+  // =========================
+  // REGISTER
+  // =========================
+
+  async function register() {
+
+    const name =
+      document.getElementById("registerName").value;
+
+    const email =
+      document.getElementById("registerEmail").value;
+
+    const password =
+      document.getElementById("registerPassword").value;
+
+    const result =
+      document.getElementById("registerResult");
+
+
+    if (!name || !email || !password) {
+
+      result.innerText =
+        "Please fill all fields.";
+
+      return;
+    }
+
+
+    result.innerText =
+      "Creating account...";
+
+
+    try {
+
+      const response = await fetch(
+        API + "/api/auth/register",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            password: password
+          })
+        }
+      );
+
+
+      const data =
+        await response.json();
+
+
+      if (response.ok) {
+
+        result.innerText =
+          "Account created successfully! Please login.";
+
+        document.getElementById("registerName").value = "";
+        document.getElementById("registerEmail").value = "";
+        document.getElementById("registerPassword").value = "";
+
+      } else {
+
+        result.innerText =
+          data.message;
+      }
+
+
+    } catch (error) {
+
+      result.innerText =
+        "Server connection failed.";
+    }
+  }
+
+
+  // =========================
+  // LOGIN
+  // =========================
+
+  async function login() {
+
+    const email =
+      document.getElementById("email").value;
+
+    const password =
+      document.getElementById("password").value;
+
+    const result =
+      document.getElementById("loginResult");
+
+
+    if (!email || !password) {
+
+      result.innerText =
+        "Please enter email and password.";
+
+      return;
+    }
+
+
+    try {
+
+      const response = await fetch(
+        API + "/api/auth/login",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            email: email,
+            password: password
+          })
+        }
+      );
+
+
+      const data =
+        await response.json();
+
+
+      if (response.ok) {
+
+        localStorage.setItem(
+          "token",
+          data.token
+        );
+
+
+        document.getElementById(
+          "loginSection"
+        ).style.display = "none";
+
+
+        document.getElementById(
+          "registerSection"
+        ).style.display = "none";
+
+
+        document.getElementById(
+          "faqSection"
+        ).style.display = "block";
+
+
+        getFAQs();
+
+
+      } else {
+
+        result.innerText =
+          data.message;
+      }
+
+
+    } catch (error) {
+
+      result.innerText =
+        "Server connection failed.";
+    }
+  }
+
+
+  // =========================
+  // GENERATE FAQ WITH AI
+  // =========================
+
+  async function generateFAQ() {
+
+    const topic =
+      document.getElementById("topic").value;
+
+    const result =
+      document.getElementById("faqResult");
+
+    const saveSection =
+      document.getElementById("saveAISection");
+
+
+    if (!topic) {
+
+      result.innerText =
+        "Please enter a topic.";
+
+      return;
+    }
+
+
+    result.innerText =
+      "🤖 AI is generating your FAQ...";
+
+    saveSection.style.display = "none";
+
+
+    const token =
+      localStorage.getItem("token");
+
+
+    try {
+
+      const response = await fetch(
+        API + "/api/ai/generate-faq",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+
+          body: JSON.stringify({
+            topic: topic
+          })
+        }
+      );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        result.innerText =
+          data.message;
+
+        return;
+      }
+
+
+      const text =
+        data.result || "";
+
+
+      generatedQuestion =
+        extractValue(text, "Question:");
+
+      generatedAnswer =
+        extractValue(text, "Answer:");
+
+      generatedCategory =
+        extractValue(text, "Category:");
+
+
+      result.innerHTML = `
+        <div class="ai-box">
+
+          <strong>🤖 AI Generated FAQ</strong>
+          <br><br>
+
+          <strong>Question:</strong>
+          ${generatedQuestion || "Generated question"}
+          <br>
+
+          <strong>Answer:</strong>
+          ${generatedAnswer || text}
+          <br>
+
+          <strong>Category:</strong>
+          ${generatedCategory || topic}
+
+        </div>
+      `;
+
+
+      if (generatedAnswer) {
+
+        saveSection.style.display =
+          "block";
+
+      }
+
+
+    } catch (error) {
+
+      result.innerText =
+        "Failed to connect to AI server.";
+    }
+  }
+
+
+  // =========================
+  // EXTRACT AI VALUES
+  // =========================
+
+  function extractValue(text, label) {
+
+    const start =
+      text.indexOf(label);
+
+    if (start === -1) {
+      return "";
+    }
+
+
+    const value =
+      text.substring(
+        start + label.length
+      );
+
+
+    const nextLabel =
+      value.search(
+        /Question:|Answer:|Category:/i
+      );
+
+
+    if (nextLabel === -1) {
+
+      return value.trim();
+    }
+
+
+    return value
+      .substring(0, nextLabel)
+      .trim();
+  }
+
+
+  // =========================
+  // SAVE AI GENERATED FAQ
+  // =========================
+
+  async function saveGeneratedFAQ() {
+
+    const result =
+      document.getElementById("saveAIResult");
+
+
+    if (!generatedQuestion ||
+        !generatedAnswer) {
+
+      result.innerText =
+        "AI FAQ could not be read. Please generate again.";
+
+      return;
+    }
+
+
+    const token =
+      localStorage.getItem("token");
+
+
+    result.innerText =
+      "Saving FAQ...";
+
+
+    try {
+
+      const response = await fetch(
+        API + "/api/faqs",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+
+          body: JSON.stringify({
+
+            question:
+              generatedQuestion,
+
+            answer:
+              generatedAnswer,
+
+            category:
+              generatedCategory || "AI Generated"
+
+          })
+        }
+      );
+
+
+      const data =
+        await response.json();
+
+
+      if (response.ok) {
+
+        result.innerText =
+          "✅ AI FAQ saved successfully!";
+
+        document.getElementById(
+          "saveAISection"
+        ).style.display = "none";
+
+
+        getFAQs();
+
+      } else {
+
+        result.innerText =
+          data.message;
+      }
+
+
+    } catch (error) {
+
+      result.innerText =
+        "Failed to save AI FAQ.";
+    }
+  }
+
+
+  // =========================
+  // CREATE FAQ
+  // =========================
+
+  async function createFAQ() {
+
+    const question =
+      document.getElementById("question").value;
+
+    const answer =
+      document.getElementById("answer").value;
+
+    const category =
+      document.getElementById("category").value;
+
+    const result =
+      document.getElementById("createResult");
+
+
+    if (!question || !answer || !category) {
+
+      result.innerText =
+        "Please fill all FAQ fields.";
+
+      return;
+    }
+
+
+    const token =
+      localStorage.getItem("token");
+
+
+    try {
+
+      const response = await fetch(
+        API + "/api/faqs",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+
+          body: JSON.stringify({
+            question: question,
+            answer: answer,
+            category: category
+          })
+        }
+      );
+
+
+      const data =
+        await response.json();
+
+
+      if (response.ok) {
+
+        result.innerText =
+          "FAQ created successfully!";
+
+        document.getElementById("question").value = "";
+        document.getElementById("answer").value = "";
+        document.getElementById("category").value = "";
+
+        getFAQs();
+
+      } else {
+
+        result.innerText =
+          data.message;
+      }
+
+
+    } catch (error) {
+
+      result.innerText =
+        "Failed to create FAQ.";
+    }
+  }
+
+
+  // =========================
+  // GET ALL FAQs
+  // =========================
+
+  async function getFAQs() {
+
+    const result =
+      document.getElementById("allFAQs");
+
+
+    result.innerHTML =
+      "Loading FAQs...";
+
+
+    try {
+
+      const response = await fetch(
+        API + "/api/faqs"
+      );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        result.innerText =
+          data.message;
+
+        return;
+      }
+
+
+      if (data.length === 0) {
+
+        result.innerText =
+          "No FAQs available.";
+
+        return;
+      }
+
+
+      result.innerHTML = "";
+
+
+      data.forEach(faq => {
+
+        const card =
+          document.createElement("div");
+
+        card.className =
+          "faq-card";
+
+
+        card.innerHTML = `
+
+          <strong>Question:</strong>
+          ${faq.question}
+          <br>
+
+          <strong>Answer:</strong>
+          ${faq.answer}
+          <br>
+
+          <strong>Category:</strong>
+          ${faq.category}
+          <br>
+
+          <button
+            class="orange"
+            onclick="updateFAQ('${faq._id}')"
+          >
+            Edit
+          </button>
+
+          <button
+            class="red"
+            onclick="deleteFAQ('${faq._id}')"
+          >
+            Delete
+          </button>
+
+        `;
+
+
+        result.appendChild(card);
+
+      });
+
+
+    } catch (error) {
+
+      result.innerText =
+        "Failed to load FAQs.";
+    }
+  }
+
+
+  // =========================
+  // UPDATE FAQ
+  // =========================
+
+  async function updateFAQ(id) {
+
+    const question =
+      prompt("Enter new question:");
+
+    if (question === null) return;
+
+
+    const answer =
+      prompt("Enter new answer:");
+
+    if (answer === null) return;
+
+
+    const category =
+      prompt("Enter new category:");
+
+    if (category === null) return;
+
+
+    const token =
+      localStorage.getItem("token");
+
+
+    try {
+
+      const response = await fetch(
+        API + "/api/faqs/" + id,
+        {
+          method: "PUT",
+
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+
+          body: JSON.stringify({
+            question: question,
+            answer: answer,
+            category: category
+          })
+        }
+      );
+
+
+      const data =
+        await response.json();
+
+
+      if (response.ok) {
+
+        alert(
+          "FAQ updated successfully!"
+        );
+
+        getFAQs();
+
+      } else {
+
+        alert(data.message);
+      }
+
+
+    } catch (error) {
+
+      alert(
+        "Failed to update FAQ."
+      );
+    }
+  }
+
+
+  // =========================
+  // DELETE FAQ
+  // =========================
+
+  async function deleteFAQ(id) {
+
+    const confirmDelete =
+      confirm(
+        "Are you sure you want to delete this FAQ?"
+      );
+
+
+    if (!confirmDelete) return;
+
+
+    const token =
+      localStorage.getItem("token");
+
+
+    try {
+
+      const response = await fetch(
+        API + "/api/faqs/" + id,
+        {
+          method: "DELETE",
+
+          headers: {
+            "Authorization":
+              "Bearer " + token
+          }
+        }
+      );
+
+
+      const data =
+        await response.json();
+
+
+      if (response.ok) {
+
+        alert(
+          "FAQ deleted successfully!"
+        );
+
+        getFAQs();
+
+      } else {
+
+        alert(data.message);
+      }
+
+
+    } catch (error) {
+
+      alert(
+        "Failed to delete FAQ."
+      );
+    }
+  }
+
+
+  // =========================
+  // SEARCH FAQs
+  // =========================
+
+  async function searchFAQs() {
+
+    const query =
+      document.getElementById("searchQuery").value;
+
+    const result =
+      document.getElementById("searchResult");
+
+
+    if (!query) {
+
+      result.innerText =
+        "Please enter a search term.";
+
+      return;
+    }
+
+
+    result.innerText =
+      "Searching...";
+
+
+    try {
+
+      const response = await fetch(
+        API +
+        "/api/faqs/search?q=" +
+        encodeURIComponent(query)
+      );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        result.innerText =
+          data.message;
+
+        return;
+      }
+
+
+      if (data.length === 0) {
+
+        result.innerText =
+          "No FAQs found.";
+
+        return;
+      }
+
+
+      result.innerHTML = "";
+
+
+      data.forEach(faq => {
+
+        const card =
+          document.createElement("div");
+
+        card.className =
+          "faq-card";
+
+
+        card.innerHTML = `
+
+          <strong>Question:</strong>
+          ${faq.question}
+          <br>
+
+          <strong>Answer:</strong>
+          ${faq.answer}
+          <br>
+
+          <strong>Category:</strong>
+          ${faq.category}
+
+        `;
+
+
+        result.appendChild(card);
+
+      });
+
+
+    } catch (error) {
+
+      result.innerText =
+        "Failed to search FAQs.";
+    }
+  }
+
+
+  // =========================
+  // LOGOUT
+  // =========================
+
+  function logout() {
+
+    localStorage.removeItem("token");
+
+
+    document.getElementById(
+      "faqSection"
+    ).style.display = "none";
+
+
+    document.getElementById(
+      "loginSection"
+    ).style.display = "block";
+
+
+    document.getElementById(
+      "registerSection"
+    ).style.display = "none";
+
+
+    document.getElementById("email").value = "";
+    document.getElementById("password").value = "";
+
+    document.getElementById("topic").value = "";
+    document.getElementById("question").value = "";
+    document.getElementById("answer").value = "";
+    document.getElementById("category").value = "";
+    document.getElementById("searchQuery").value = "";
+
+    document.getElementById("faqResult").innerText = "";
+    document.getElementById("createResult").innerText = "";
+    document.getElementById("saveAIResult").innerText = "";
+    document.getElementById("searchResult").innerText = "";
+    document.getElementById("allFAQs").innerHTML = "";
+
+    document.getElementById(
+      "saveAISection"
+    ).style.display = "none";
+  }
+
+</script>
+
+</body>
+</html>
